@@ -6,6 +6,7 @@
     <title>Courseware Outlines</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/outline.css">
 </head>
 <body>
     <!-- Main Container -->
@@ -51,8 +52,19 @@
             </div>
 
             <!-- Outline Content View -->
-            <div id="outline-content-view" class="view hidden">
-                <div class="outline-container"></div>
+            <div id="outline-content-view" class="view hidden" role="article">
+                <nav class="breadcrumb outline-breadcrumb" aria-label="Breadcrumb navigation">
+                    <button class="back-button" aria-label="Go back to outlines">
+                        <span class="back-arrow">←</span>
+                        Back
+                    </button>
+                    <ol class="breadcrumb-list">
+                        <li><a href="#" data-view="categories">Categories</a></li>
+                        <li><a href="#" class="current-category" data-view="outlines">Category Name</a></li>
+                        <li class="current-outline">Outline Name</li>
+                    </ol>
+                </nav>
+                <article class="outline-container"></article>
             </div>
         </main>
     </div>
