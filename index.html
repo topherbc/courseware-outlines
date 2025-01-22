@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courseware Outlines</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Navigation Menu (Hidden by default) -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-categories"></div>
+                <div class="sidebar-outlines"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Header with optional hamburger menu -->
+            <header id="header">
+                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
+                    <span class="hamburger"></span>
+                </button>
+                <h1>Courseware Outlines</h1>
+            </header>
+
+            <!-- Home Categories View -->
+            <div id="categories-view" class="view">
+                <h2>Select a Category</h2>
+                <div class="categories-grid"></div>
+            </div>
+
+            <!-- Outlines List View -->
+            <div id="outlines-view" class="view hidden">
+                <h2>Select an Outline</h2>
+                <div class="outlines-grid"></div>
+            </div>
+
+            <!-- Outline Content View -->
+            <div id="outline-content-view" class="view hidden">
+                <div class="outline-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
