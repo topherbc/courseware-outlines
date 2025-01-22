@@ -36,10 +36,10 @@ A minimal web application for viewing educational course outlines with an intuit
   - [x] Add proper content structure (headers, sections)
   - [x] Implement content formatting
   - [x] Add print-friendly styling
-- [ ] Improve navigation:
-  - [ ] Make hamburger menu accessible
-  - [ ] Add keyboard navigation support
-  - [ ] Implement smooth state transitions
+- [x] Improve navigation:
+  - [x] Make hamburger menu accessible
+  - [x] Add keyboard navigation support
+  - [x] Implement smooth state transitions
 - [ ] Add visual feedback:
   - [ ] Add loading states
   - [ ] Improve fade-in animations
