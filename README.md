@@ -13,7 +13,7 @@ A minimal web application for viewing educational course outlines with an intuit
 
 ### Phase 1: Basic Structure Setup
 - [x] Create initial HTML structure
-- [ ] Set up minimal CSS styling
+- [x] Set up minimal CSS styling
 - [ ] Add basic JavaScript functionality
 - [ ] Create mock data structure (4 categories, 4 outlines each)
 
