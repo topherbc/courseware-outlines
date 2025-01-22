@@ -18,10 +18,10 @@ A minimal web application for viewing educational course outlines with an intuit
 - [x] Create mock data structure (4 categories, 4 outlines each)
 
 ### Phase 2: Home Page Implementation
-- [ ] Enhance category list view:
-  - [ ] Implement grid layout with consistent card sizing
-  - [ ] Add hover effects and focus states
-  - [ ] Add category icons/imagery
+- [x] Enhance category list view:
+  - [x] Implement grid layout with consistent card sizing
+  - [x] Add hover effects and focus states
+  - [x] Add category icons/imagery
 - [ ] Improve outline list view:
   - [ ] Add breadcrumb navigation
   - [ ] Implement back button to categories
