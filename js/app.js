@@ -1,97 +1,103 @@
-// Main application initialization
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize navigation
-    window.navigation.init();
+// Category icons mapping
+const categoryIcons = {
+    prog: '⌨️',
+    math: '📐',
+    sci: '🔬',
+    lang: '📚'
+};
 
-    // Initialize sidebar functionality
-    initializeSidebar();
-});
-
-// Initialize sidebar functionality
-function initializeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const sidebarCategories = sidebar.querySelector('.sidebar-categories');
-    const sidebarOutlines = sidebar.querySelector('.sidebar-outlines');
-
-    // Render categories in sidebar
-    function renderSidebarCategories() {
-        const categories = window.courseware.getCategories();
-        
-        sidebarCategories.innerHTML = categories.map(category => `
-            <div class="sidebar-item" data-category="${category.id}">
-                ${category.title}
+// Render categories grid
+function renderCategories() {
+    const categoriesGrid = document.querySelector('.categories-grid');
+    const categories = window.courseware.getCategories();
+    
+    categoriesGrid.innerHTML = categories.map(category => `
+        <div class="card" tabindex="0" role="button" aria-label="${category.title}" data-category-id="${category.id}">
+            <div class="card-icon">${categoryIcons[category.id] || '📚'}</div>
+            <div class="card-content">
+                <h3 class="card-title">${category.title}</h3>
+                <p class="card-description">${category.description}</p>
             </div>
-        `).join('');
-
-        // Add click handlers
-        sidebarCategories.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const categoryId = item.dataset.category;
-                renderSidebarOutlines(categoryId);
-                
-                // Update main view if not already showing outlines
-                if (window.navigation.currentView !== 'outlines') {
-                    window.navigation.showView('outlines', categoryId);
-                }
-            });
-        });
-    }
-
-    // Render outlines in sidebar
-    function renderSidebarOutlines(categoryId) {
-        const category = window.courseware.getCategory(categoryId);
-        if (!category) return;
-
-        sidebarOutlines.innerHTML = category.outlines.map(outline => `
-            <div class="sidebar-item" data-outline="${outline.id}">
-                ${outline.title}
+            <div class="card-meta">
+                ${category.outlines.length} outline${category.outlines.length !== 1 ? 's' : ''}
             </div>
-        `).join('');
+        </div>
+    `).join('');
 
-        // Add click handlers
-        sidebarOutlines.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const outlineId = item.dataset.outline;
-                
-                // Update main view if not already showing this outline
-                if (window.navigation.currentView !== 'outline-content' || 
-                    window.navigation.selectedOutline !== outlineId) {
-                    window.navigation.showView('outline-content', {
-                        categoryId: category.id,
-                        outlineId: outlineId
-                    });
-                }
-                
-                // Close sidebar on mobile
-                if (window.innerWidth <= 768) {
-                    window.navigation.toggleSidebar();
-                }
-            });
+    // Add click and keyboard event listeners
+    const cards = categoriesGrid.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('click', handleCategoryClick);
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleCategoryClick.call(card);
+            }
         });
-    }
-
-    // Initialize sidebar categories
-    renderSidebarCategories();
-
-    // Handle window resize for responsive behavior
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('active');
-            window.navigation.isSidebarOpen = false;
-        }
     });
 }
 
-// Handle keyboard navigation
-document.addEventListener('keydown', (e) => {
-    // Escape key closes sidebar
-    if (e.key === 'Escape' && window.navigation.isSidebarOpen) {
-        window.navigation.toggleSidebar();
-    }
+// Handle category selection
+function handleCategoryClick() {
+    const categoryId = this.dataset.categoryId;
+    const category = window.courseware.getCategory(categoryId);
+    
+    // Update the outlines view
+    const outlinesView = document.getElementById('outlines-view');
+    const outlinesGrid = outlinesView.querySelector('.outlines-grid');
+    
+    // Update view title
+    outlinesView.querySelector('h2').textContent = `${category.title} Outlines`;
+    
+    // Render outlines
+    outlinesGrid.innerHTML = category.outlines.map(outline => `
+        <div class="card" tabindex="0" role="button" aria-label="${outline.title}" data-outline-id="${outline.id}">
+            <div class="card-content">
+                <h3 class="card-title">${outline.title}</h3>
+            </div>
+        </div>
+    `).join('');
+    
+    // Switch views
+    document.getElementById('categories-view').classList.add('hidden');
+    outlinesView.classList.remove('hidden');
+    
+    // Add click handlers for outlines
+    outlinesGrid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => handleOutlineClick(categoryId, card.dataset.outlineId));
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleOutlineClick(categoryId, card.dataset.outlineId);
+            }
+        });
+    });
+}
 
-    // Back button (optional)
-    if (e.key === 'Backspace' && !e.target.matches('input, textarea')) {
-        e.preventDefault();
-        window.navigation.goBack();
-    }
+// Handle outline selection
+function handleOutlineClick(categoryId, outlineId) {
+    const outline = window.courseware.getOutline(categoryId, outlineId);
+    
+    // Show the menu toggle
+    document.getElementById('menu-toggle').style.display = 'block';
+    
+    // Update content view
+    const contentView = document.getElementById('outline-content-view');
+    contentView.querySelector('.outline-container').innerHTML = outline.content;
+    
+    // Switch views
+    document.getElementById('outlines-view').classList.add('hidden');
+    contentView.classList.remove('hidden');
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    renderCategories();
 });
+
+// Make functions available globally
+window.app = {
+    renderCategories,
+    handleCategoryClick,
+    handleOutlineClick
+};
