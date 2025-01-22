@@ -76,6 +76,64 @@ h2 {
 .hamburger::before { top: -6px; }
 .hamburger::after { bottom: -6px; }
 
+/* Breadcrumb Navigation */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 12px 0;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #4A90E2;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.back-arrow {
+    font-size: 1.2rem;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+}
+
+.breadcrumb-list li:not(:last-child)::after {
+    content: '/';
+    margin-left: 8px;
+    color: #666;
+}
+
+.breadcrumb-list a {
+    color: #4A90E2;
+    text-decoration: none;
+}
+
+.breadcrumb-list a:hover {
+    text-decoration: underline;
+}
+
+.current-category {
+    color: #666;
+    font-weight: 500;
+}
+
 /* Sidebar */
 .sidebar {
     width: 250px;
@@ -87,6 +145,11 @@ h2 {
     left: 0;
     height: 100vh;
     z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+    transform: translateX(0);
 }
 
 .sidebar-content {
@@ -96,12 +159,17 @@ h2 {
 /* Views */
 .view {
     opacity: 1;
-    transition: opacity 0.3s ease;
+    transform: translateX(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    position: absolute;
+    width: 100%;
 }
 
 .view.hidden {
-    display: none;
     opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
+    position: absolute;
 }
 
 /* Category and Outline Grids */
@@ -204,6 +272,12 @@ h2 {
 
     .card {
         min-height: 160px;
+    }
+
+    .breadcrumb {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 }
 
