@@ -19,6 +19,24 @@ const navigation = {
             menuToggle.addEventListener('click', () => this.toggleSidebar());
         }
 
+        // Back button
+        const backButton = document.querySelector('.back-button');
+        if (backButton) {
+            backButton.addEventListener('click', () => this.goBack());
+        }
+
+        // Breadcrumb navigation
+        const breadcrumbLinks = document.querySelectorAll('.breadcrumb-list a');
+        breadcrumbLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const view = link.dataset.view;
+                if (view === 'categories') {
+                    this.showView('categories');
+                }
+            });
+        });
+
         // Close sidebar when clicking outside
         document.addEventListener('click', (e) => {
             const sidebar = document.getElementById('sidebar');
@@ -32,24 +50,44 @@ const navigation = {
         });
     },
 
-    // Show/hide views
+    // Show/hide views with transition
     showView(viewName, data = null) {
         const views = ['categories', 'outlines', 'outline-content'];
+        const currentViewElement = document.getElementById(`${this.currentView}-view`);
+        const nextViewElement = document.getElementById(`${viewName}-view`);
         
-        views.forEach(view => {
-            const element = document.getElementById(`${view}-view`);
-            if (element) {
-                if (view === viewName) {
-                    element.classList.remove('hidden');
-                    this.updateViewContent(view, data);
-                } else {
-                    element.classList.add('hidden');
-                }
-            }
-        });
+        if (currentViewElement && nextViewElement) {
+            // Start transition
+            currentViewElement.classList.add('hidden');
+            nextViewElement.classList.remove('hidden');
+            
+            // Trigger fade-in animation
+            nextViewElement.classList.add('fade-in');
+            setTimeout(() => {
+                nextViewElement.classList.remove('fade-in');
+            }, 300); // Match the CSS animation duration
+        }
 
         this.currentView = viewName;
+        this.updateViewContent(viewName, data);
         this.updateMenuToggleVisibility();
+        this.updateBreadcrumb(viewName, data);
+    },
+
+    // Update breadcrumb navigation
+    updateBreadcrumb(view, data) {
+        const currentCategory = document.querySelector('.current-category');
+        if (!currentCategory) return;
+
+        if (view === 'outlines' && data) {
+            const category = window.courseware.getCategory(data);
+            if (category) {
+                currentCategory.textContent = category.title;
+                currentCategory.style.display = 'inline';
+            }
+        } else {
+            currentCategory.style.display = 'none';
+        }
     },
 
     // Update view content
@@ -76,8 +114,13 @@ const navigation = {
         
         categoriesGrid.innerHTML = categories.map(category => `
             <div class="card" data-category="${category.id}">
-                <h3>${category.title}</h3>
-                <p>${category.description}</p>
+                <div class="card-icon">
+                    <i class="${category.icon || 'default-icon'}"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${category.title}</h3>
+                    <p class="card-description">${category.description}</p>
+                </div>
             </div>
         `).join('');
 
@@ -101,7 +144,13 @@ const navigation = {
 
         outlinesGrid.innerHTML = category.outlines.map(outline => `
             <div class="card" data-outline="${outline.id}">
-                <h3>${outline.title}</h3>
+                <div class="card-content">
+                    <h3 class="card-title">${outline.title}</h3>
+                    <p class="card-description">${outline.description || ''}</p>
+                    <div class="card-meta">
+                        <span>${outline.duration || ''}</span>
+                    </div>
+                </div>
             </div>
         `).join('');
 
@@ -159,6 +208,7 @@ const navigation = {
         if (this.currentView === 'outline-content') {
             this.showView('outlines', this.selectedCategory);
         } else if (this.currentView === 'outlines') {
+            this.selectedCategory = null;
             this.showView('categories');
         }
     }
