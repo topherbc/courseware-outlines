@@ -8,7 +8,81 @@ const navigation = {
     // Initialize navigation
     init() {
         this.attachEventListeners();
-        this.showView('categories');
+        this.handleInitialUrl(); // Handle URL on page load
+        window.addEventListener('popstate', (event) => this.handlePopState(event));
+    },
+
+    // Handle browser back/forward
+    handlePopState(event) {
+        if (event.state) {
+            this.loadStateFromUrl(event.state);
+        } else {
+            this.loadStateFromUrl(this.parseUrl());
+        }
+    },
+
+    // Parse URL parameters
+    parseUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            view: params.get('view') || 'categories',
+            categoryId: params.get('category'),
+            outlineId: params.get('outline')
+        };
+    },
+
+    // Update URL based on current state
+    updateUrl(state, pushState = true) {
+        const params = new URLSearchParams();
+        
+        if (state.view !== 'categories') {
+            params.set('view', state.view);
+        }
+        if (state.categoryId) {
+            params.set('category', state.categoryId);
+        }
+        if (state.outlineId) {
+            params.set('outline', state.outlineId);
+        }
+
+        const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+        
+        if (pushState) {
+            history.pushState(state, '', url);
+        } else {
+            history.replaceState(state, '', url);
+        }
+    },
+
+    // Handle initial URL on page load
+    handleInitialUrl() {
+        const state = this.parseUrl();
+        this.loadStateFromUrl(state);
+    },
+
+    // Load state from URL parameters
+    loadStateFromUrl(state) {
+        switch (state.view) {
+            case 'outline-content':
+                if (state.categoryId && state.outlineId) {
+                    this.selectedCategory = state.categoryId;
+                    this.selectedOutline = state.outlineId;
+                    this.showView('outline-content', { 
+                        categoryId: state.categoryId, 
+                        outlineId: state.outlineId 
+                    }, false);
+                }
+                break;
+            case 'outlines':
+                if (state.categoryId) {
+                    this.selectedCategory = state.categoryId;
+                    this.showView('outlines', state.categoryId, false);
+                }
+                break;
+            default:
+                this.showView('categories', null, false);
+                break;
+        }
     },
 
     // Attach event listeners
@@ -22,7 +96,10 @@ const navigation = {
         // Back button
         const backButton = document.querySelector('.back-button');
         if (backButton) {
-            backButton.addEventListener('click', () => this.goBack());
+            backButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.goBack();
+            });
         }
 
         // Breadcrumb navigation
@@ -51,7 +128,7 @@ const navigation = {
     },
 
     // Show/hide views with transition
-    showView(viewName, data = null) {
+    showView(viewName, data = null, updateHistory = true) {
         const views = ['categories', 'outlines', 'outline-content'];
         const currentViewElement = document.getElementById(`${this.currentView}-view`);
         const nextViewElement = document.getElementById(`${viewName}-view`);
@@ -72,6 +149,16 @@ const navigation = {
         this.updateViewContent(viewName, data);
         this.updateMenuToggleVisibility();
         this.updateBreadcrumb(viewName, data);
+
+        // Update URL and browser history
+        if (updateHistory) {
+            const state = {
+                view: viewName,
+                categoryId: this.selectedCategory,
+                outlineId: this.selectedOutline
+            };
+            this.updateUrl(state);
+        }
     },
 
     // Update breadcrumb navigation
@@ -205,12 +292,7 @@ const navigation = {
 
     // Navigate back
     goBack() {
-        if (this.currentView === 'outline-content') {
-            this.showView('outlines', this.selectedCategory);
-        } else if (this.currentView === 'outlines') {
-            this.selectedCategory = null;
-            this.showView('categories');
-        }
+        history.back();
     }
 };
 
