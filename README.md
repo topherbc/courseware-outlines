@@ -22,10 +22,10 @@ A minimal web application for viewing educational course outlines with an intuit
   - [x] Implement grid layout with consistent card sizing
   - [x] Add hover effects and focus states
   - [x] Add category icons/imagery
-- [ ] Improve outline list view:
-  - [ ] Add breadcrumb navigation
-  - [ ] Implement back button to categories
-  - [ ] Add transition animations between views
+- [x] Improve outline list view:
+  - [x] Add breadcrumb navigation
+  - [x] Implement back button to categories
+  - [x] Add transition animations between views
 - [ ] Implement route management:
   - [ ] Add URL-based navigation
   - [ ] Implement browser history support
