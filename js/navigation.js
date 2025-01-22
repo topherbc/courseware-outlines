@@ -4,6 +4,7 @@ const navigation = {
     selectedCategory: null,
     selectedOutline: null,
     isSidebarOpen: false,
+    lastFocusedElement: null,
 
     // Initialize navigation
     init() {
@@ -87,15 +88,29 @@ const navigation = {
 
     // Attach event listeners
     attachEventListeners() {
-        // Menu toggle
+        // Menu toggle with accessibility improvements
         const menuToggle = document.getElementById('menu-toggle');
         if (menuToggle) {
+            // Set ARIA attributes
+            menuToggle.setAttribute('aria-label', 'Toggle navigation menu');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.setAttribute('aria-controls', 'sidebar');
+            menuToggle.setAttribute('role', 'button');
+            menuToggle.tabIndex = 0;
+
             menuToggle.addEventListener('click', () => this.toggleSidebar());
+            menuToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleSidebar();
+                }
+            });
         }
 
         // Back button
         const backButton = document.querySelector('.back-button');
         if (backButton) {
+            backButton.setAttribute('aria-label', 'Go back to previous view');
             backButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.goBack();
@@ -125,6 +140,49 @@ const navigation = {
                 this.toggleSidebar();
             }
         });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // ESC key closes sidebar
+            if (e.key === 'Escape' && this.isSidebarOpen) {
+                this.toggleSidebar();
+            }
+
+            // Tab trap for sidebar when open
+            if (e.key === 'Tab' && this.isSidebarOpen) {
+                this.handleTabKey(e);
+            }
+        });
+    },
+
+    // Handle tab key for focus trap in sidebar
+    handleTabKey(e) {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        const focusableElements = sidebar.querySelectorAll(
+            'a[href], button, [tabindex]:not([tabindex="-1"])'
+        );
+        
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // Shift + Tab
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            }
+        }
+        // Tab
+        else {
+            if (document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
     },
 
     // Show/hide views with transition
@@ -134,15 +192,30 @@ const navigation = {
         const nextViewElement = document.getElementById(`${viewName}-view`);
         
         if (currentViewElement && nextViewElement) {
-            // Start transition
-            currentViewElement.classList.add('hidden');
-            nextViewElement.classList.remove('hidden');
+            // Add transition classes
+            currentViewElement.classList.add('view-exit');
+            nextViewElement.classList.add('view-enter');
             
-            // Trigger fade-in animation
-            nextViewElement.classList.add('fade-in');
+            // Start transition
             setTimeout(() => {
-                nextViewElement.classList.remove('fade-in');
-            }, 300); // Match the CSS animation duration
+                currentViewElement.classList.add('hidden');
+                currentViewElement.classList.remove('view-exit');
+                nextViewElement.classList.remove('hidden');
+                
+                // Trigger fade-in animation
+                nextViewElement.classList.add('fade-in');
+                setTimeout(() => {
+                    nextViewElement.classList.remove('view-enter', 'fade-in');
+                    
+                    // Focus management
+                    const firstFocusable = nextViewElement.querySelector(
+                        'a[href], button, [tabindex]:not([tabindex="-1"])'
+                    );
+                    if (firstFocusable) {
+                        firstFocusable.focus();
+                    }
+                }, 300);
+            }, 150);
         }
 
         this.currentView = viewName;
@@ -200,9 +273,13 @@ const navigation = {
         const categories = window.courseware.getCategories();
         
         categoriesGrid.innerHTML = categories.map(category => `
-            <div class="card" data-category="${category.id}">
+            <div class="card" 
+                 data-category="${category.id}"
+                 tabindex="0"
+                 role="button"
+                 aria-label="View ${category.title} category">
                 <div class="card-icon">
-                    <i class="${category.icon || 'default-icon'}"></i>
+                    <i class="${category.icon || 'default-icon'}" aria-hidden="true"></i>
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">${category.title}</h3>
@@ -211,12 +288,20 @@ const navigation = {
             </div>
         `).join('');
 
-        // Attach click handlers
+        // Attach click and keyboard handlers
         categoriesGrid.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', () => {
+            const handleSelection = () => {
                 const categoryId = card.dataset.category;
                 this.selectedCategory = categoryId;
                 this.showView('outlines', categoryId);
+            };
+
+            card.addEventListener('click', handleSelection);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelection();
+                }
             });
         });
     },
@@ -230,7 +315,11 @@ const navigation = {
         if (!category) return;
 
         outlinesGrid.innerHTML = category.outlines.map(outline => `
-            <div class="card" data-outline="${outline.id}">
+            <div class="card" 
+                 data-outline="${outline.id}"
+                 tabindex="0"
+                 role="button"
+                 aria-label="View ${outline.title} outline">
                 <div class="card-content">
                     <h3 class="card-title">${outline.title}</h3>
                     <p class="card-description">${outline.description || ''}</p>
@@ -241,12 +330,20 @@ const navigation = {
             </div>
         `).join('');
 
-        // Attach click handlers
+        // Attach click and keyboard handlers
         outlinesGrid.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', () => {
+            const handleSelection = () => {
                 const outlineId = card.dataset.outline;
                 this.selectedOutline = outlineId;
                 this.showView('outline-content', { categoryId, outlineId });
+            };
+
+            card.addEventListener('click', handleSelection);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelection();
+                }
             });
         });
     },
@@ -262,30 +359,65 @@ const navigation = {
         if (!outline) return;
 
         outlineContainer.innerHTML = outline.content;
+
+        // Make content container focusable
+        outlineContainer.tabIndex = 0;
+        outlineContainer.focus();
     },
 
-    // Toggle sidebar
+    // Toggle sidebar with improved accessibility
     toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.getElementById('menu-toggle');
         
         if (sidebar && menuToggle) {
             this.isSidebarOpen = !this.isSidebarOpen;
+            
+            // Store last focused element when opening
+            if (this.isSidebarOpen) {
+                this.lastFocusedElement = document.activeElement;
+            }
+
+            // Update ARIA attributes
+            menuToggle.setAttribute('aria-expanded', String(this.isSidebarOpen));
+            sidebar.setAttribute('aria-hidden', String(!this.isSidebarOpen));
+
+            // Apply transitions
             sidebar.classList.toggle('active', this.isSidebarOpen);
             menuToggle.classList.toggle('active', this.isSidebarOpen);
+
+            // Focus management
+            if (this.isSidebarOpen) {
+                const firstFocusable = sidebar.querySelector(
+                    'a[href], button, [tabindex]:not([tabindex="-1"])'
+                );
+                if (firstFocusable) {
+                    firstFocusable.focus();
+                }
+            } else if (this.lastFocusedElement) {
+                this.lastFocusedElement.focus();
+            }
         }
     },
 
-    // Update menu toggle visibility
+    // Update menu toggle visibility with smooth transition
     updateMenuToggleVisibility() {
         const menuToggle = document.getElementById('menu-toggle');
         if (menuToggle) {
             if (this.currentView === 'outline-content') {
                 menuToggle.style.display = 'block';
-                menuToggle.classList.add('visible');
+                // Allow display:block to take effect before adding transition
+                requestAnimationFrame(() => {
+                    menuToggle.classList.add('visible');
+                });
             } else {
-                menuToggle.style.display = 'none';
                 menuToggle.classList.remove('visible');
+                // Wait for transition to complete before hiding
+                menuToggle.addEventListener('transitionend', () => {
+                    if (!menuToggle.classList.contains('visible')) {
+                        menuToggle.style.display = 'none';
+                    }
+                }, { once: true });
             }
         }
     },
