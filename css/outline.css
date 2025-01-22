@@ -4,12 +4,13 @@
     margin: 0 auto;
     padding: 2rem;
     line-height: 1.6;
+    color: #333;
 }
 
 /* Headers */
 .outline-container h1 {
     font-size: 2.5rem;
-    color: #333;
+    color: #2c3e50;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid #eee;
@@ -17,48 +18,139 @@
 
 .outline-container h2 {
     font-size: 1.8rem;
-    color: #444;
+    color: #34495e;
     margin: 2rem 0 1rem;
 }
 
 .outline-container h3 {
     font-size: 1.4rem;
-    color: #555;
+    color: #455a64;
     margin: 1.5rem 0 0.8rem;
 }
 
 /* Sections */
 .outline-container section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #f9f9f9;
+    margin: 2.5rem 0;
+    padding: 2rem;
+    background: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
 }
 
-/* Lists */
-.outline-container ul {
+.outline-container section:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Course Overview */
+.course-overview {
+    border-left: 4px solid #3498db;
+}
+
+.course-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.meta-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Learning Objectives */
+.learning-objectives {
+    border-left: 4px solid #2ecc71;
+}
+
+.learning-objectives ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-.outline-container ul li {
+.learning-objectives li {
     margin: 0.8rem 0;
     padding-left: 1.5rem;
     position: relative;
 }
 
-.outline-container ul li:before {
+.learning-objectives li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #2ecc71;
+}
+
+/* Course Content */
+.course-content {
+    border-left: 4px solid #9b59b6;
+}
+
+.module {
+    background: white;
+    margin: 1rem 0;
+    padding: 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.module ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.module li {
+    margin: 0.8rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.module li:before {
     content: "•";
     position: absolute;
     left: 0;
-    color: #666;
+    color: #9b59b6;
 }
 
-/* Paragraphs */
+/* Assessment */
+.assessment {
+    border-left: 4px solid #e74c3c;
+}
+
+.assessment ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.assessment li {
+    margin: 0.8rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+}
+
+.assessment li:before {
+    content: "◆";
+    position: absolute;
+    left: 0;
+    color: #e74c3c;
+}
+
+/* General Text */
 .outline-container p {
     margin: 1rem 0;
     color: #555;
+    line-height: 1.7;
 }
 
 /* Print-friendly styles */
@@ -73,6 +165,7 @@
         max-width: 100%;
         padding: 0;
         margin: 0;
+        box-shadow: none;
     }
 
     .outline-container section {
@@ -80,23 +173,44 @@
         background: none;
         box-shadow: none;
         border: 1px solid #ddd;
+        padding: 1rem;
         margin: 1rem 0;
+    }
+
+    .module {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #eee;
     }
 
     .outline-container h1 {
         font-size: 24pt;
+        margin-bottom: 1rem;
     }
 
     .outline-container h2 {
         font-size: 18pt;
+        margin: 1rem 0;
     }
 
     .outline-container h3 {
         font-size: 14pt;
+        margin: 0.8rem 0;
     }
 
     .outline-container p,
     .outline-container li {
         font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    .course-meta {
+        display: block;
+    }
+
+    .meta-item {
+        margin: 1rem 0;
+        padding: 0.5rem;
+        border: 1px solid #eee;
     }
 }
