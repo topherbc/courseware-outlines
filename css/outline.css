@@ -1,0 +1,102 @@
+/* Outline Content Styling */
+.outline-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+/* Headers */
+.outline-container h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.outline-container h2 {
+    font-size: 1.8rem;
+    color: #444;
+    margin: 2rem 0 1rem;
+}
+
+.outline-container h3 {
+    font-size: 1.4rem;
+    color: #555;
+    margin: 1.5rem 0 0.8rem;
+}
+
+/* Sections */
+.outline-container section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Lists */
+.outline-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.outline-container ul li {
+    margin: 0.8rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.outline-container ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+/* Paragraphs */
+.outline-container p {
+    margin: 1rem 0;
+    color: #555;
+}
+
+/* Print-friendly styles */
+@media print {
+    .menu-toggle,
+    .sidebar,
+    .breadcrumb {
+        display: none !important;
+    }
+
+    .outline-container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .outline-container section {
+        break-inside: avoid;
+        background: none;
+        box-shadow: none;
+        border: 1px solid #ddd;
+        margin: 1rem 0;
+    }
+
+    .outline-container h1 {
+        font-size: 24pt;
+    }
+
+    .outline-container h2 {
+        font-size: 18pt;
+    }
+
+    .outline-container h3 {
+        font-size: 14pt;
+    }
+
+    .outline-container p,
+    .outline-container li {
+        font-size: 12pt;
+    }
+}
